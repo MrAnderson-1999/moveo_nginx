@@ -512,14 +512,10 @@ resource "aws_network_acl_association" "private_acl_association" {
 
 
 
-# Fetch the existing hosted zone details
-data "aws_route53_zone" "existing_zone" {
-  name = "humanity-project.com"
-}
 
 # Create a DNS record for the root domain (humanity-project.com) pointing to the ALB
 resource "aws_route53_record" "root_record" {
-  zone_id = data.aws_route53_zone.existing_zone.zone_id
+  zone_id = "Z0283867TKPLYDB766JW"
   name    = "humanity-project.com"
   type    = "A"
 
