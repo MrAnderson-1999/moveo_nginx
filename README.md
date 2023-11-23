@@ -1,110 +1,93 @@
 # AWS Nginx Infrastructure Deployment using Terraform
 
 ## Overview
-This project utilizes Terraform to deploy a secure and scalable AWS infrastructure. It features an Nginx server in a private subnet, accessible via a custom DNS name through an Application Load Balancer (ALB). A Bastion host is implemented for secure SSH access to the private subnet.
-![image](https://github.com/MrAnderson-1999/moveo_nginx/assets/87763298/1c45f7b9-b25e-4e73-85b0-5f692f61140e)
+Deploy a robust, secure AWS infrastructure with Terraform, featuring an Nginx server in a private subnet. Accessible through a custom DNS name linked to an Application Load Balancer (ALB), the setup also includes a Bastion host for secure private subnet access. 
+![Infrastructure Diagram](https://github.com/MrAnderson-1999/moveo_nginx/assets/87763298/1c45f7b9-b25e-4e73-85b0-5f692f61140e)
+
+## Key Infrastructure Components
+- **VPC**: Includes both public and private subnets.
+- **EC2 Instances**: 
+   - Bastion host in public subnet for secure access.
+   - Private Nginx server in a private subnet.
+- **Application Load Balancer (ALB)**: Directs HTTP traffic to the Nginx server.
+- **Route 53**: Manages DNS for ALB.
+- **Security Measures**: Security Groups and Network ACLs to regulate traffic flow.
+
+## Repository Structure
+- `main.tf`: Core Terraform configuration.
+- `variables.tf`: Definitions for customization.
+- `outputs.tf`: Displays key information post-deployment.
+- `vpc.tf`: VPC and subnet configurations.
+- `security_groups.tf`: Defines security rules.
+- `ec2_instances.tf`: EC2 instance setups.
+- `alb.tf`: Application Load Balancer settings.
+- `route53.tf`: DNS settings for Route 53.
 
 
+## Prerequisites
+- AWS Account with appropriate permissions.
+- Terraform (version 1.2.0 or later).
+- SSH key pair registered in AWS.
+- Registered domain name AND its hosted zone
+
+## Deployment Instructions
+**Clone git**
+- ```git clone https://github.com/MrAnderson-1999/moveo_nginx.git```
+
+**Set AWS environment**
+- Create or use an existing AWS key-pair.
+- Save the key-pair .pem file.
+- Adjust the key-par name variable "key_name" in the variable.tf file
+- Set AWS credentials env:
+   - ```export AWS_ACCESS_KEY_ID="<Access ID>"```
+   - ```export AWS_SECRET_ACCESS_KEY="<Access SECRET>"```
+   - 
+**Modify existing_zone_id AND domain_name variables.tf**
+```variable "existing_zone_id" {
+  description = "The zone id of the already existing zone"
+  default     = "Z0283867TKPLYDB766JW"
+}
+
+variable "domain_name" {
+  description = "The domain name url of the desired A record"
+  default     = "humanity-project.com"
+}
+```
+
+**Terraform Workflow**
+- Initialize Terraform: ```terraform init```
+- Review the Terraform Plan: ```terraform plan```
+- Apply the Terraform Configuration: ```terraform apply```
+
+## Access and Management
+- **SSH to Bastion Host:**
+   - ```ssh -i "local_key.pem" ubuntu@[BASTION_PUBLIC_IP]```
+- **One-time Setup of SSH from Bastion to Nginx:**
+   - ```scp -i ~/.ssh/local_key.pem local_key.pem ubuntu@[BASTION_PUBLIC_IP]:```
+- **SSH to Nginx Server:**
+   - From Bastion run
+     - ```ssh -i "local_key.pem" [PRIVATE_INSTANCE_IP]```
+
+## Customizing With Terraform
+**Modify `variables.tf` to suit specific needs. Important** variables include:
+- `ami_id`, `instance_type_bastion`, `instance_type_private`: Define EC2 settings.
+- `existing_zone_id`, `domain_name`: Route 53 DNS settings.
+- `key_name`: Your AWS SSH key pair.
+- `user_data_script`: Bootstrapping script for the Nginx server.
+
+
+**Terraform Outputs**
+After running terraform apply, you'll receive these key outputs:
+
+- Bastion Host Public IP: For setting up Bastion SSH access.
+- Private Instance Private IP: For SSH access from the Bastion Host.
+- NAT Gateway Public IP: For internet access from the private subnet.
+- ALB DNS Name: To access the Nginx server.
+
+**Cleanup**
+- To destroy the AWS resources:```terraform destroy```
 
 ## Submission Links
 1. **Application URL**: [http://humanity-project.com](http://humanity-project.com)
 2. **GitHub Repository**: [GitHub Repository URL](https://github.com/MrAnderson-1999/moveo_nginx)
-
-## Infrastructure Components
-- **VPC**: Configured with public and private subnets.
-- **EC2 Instances**: Bastion host in the public subnet; Nginx server in the private subnet.
-- **Application Load Balancer (ALB)**: Routes HTTP traffic to the Nginx server.
-- **Route 53**: Manages the custom DNS name for the ALB.
-- **Security Groups and Network ACLs**: Ensure secure network traffic.
-
-## Prerequisites
-- An active AWS Account.
-- Terraform v1.2.0 or later.
-- An SSH key pair registered with AWS.
-
-## Customization via Terraform Variables
-The `variables.tf` file allows for tailoring the deployment. Key variables:
-- `ami_id`, `instance_type_bastion`, `instance_type_private`: AMI and instance types.
-- `existing_zone_id`, `domain_name`: Route 53 configurations.
-- `key_name`: SSH key pair.
-- `user_data_script`: Script for setting up the Nginx server.
-
-## Repository Structure
-- `main.tf`: Primary Terraform configuration.
-- `variables.tf`: Variables for customization.
-- `outputs.tf`: Outputs of the Terraform deployment.
-- `vpc.tf`: Configuration for VPC and subnets.
-- `security_groups.tf`: Security group rules.
-- `ec2_instances.tf`: EC2 instances setup.
-- `alb.tf`: ALB setup and configurations.
-- `route53.tf`: Route 53 DNS configurations.
-
-
-
-- ## Deployment Instructions
-**Clone git**
-
-**Initialize Terraform**:
-   ```terraform init```
-
-
-**Export AWS env**
-**Create/Use key-pair**
-- adjust the key-pair at the variables.tf
-
-1. **Initialize Terraform**
-   ```terraform init```
-2. **Review Plan**
-   ```terraform plan```
-3. **Apply Configuration**
-   ```terraform apply```
-
-**Accessing the Application**
-Web Application URL: Access the Nginx server via http://[ALB_DNS_NAME] provided in the Terraform output.
-SSH Access:
-SSH into Bastion Host: ssh -i "path_to_key" ubuntu@[BASTION_PUBLIC_IP].
-From Bastion, SSH into the private instance: ssh -i "path_to_key" ubuntu@[PRIVATE_INSTANCE_IP].
-Cleanup
-To destroy the AWS resources created by this Terraform configuration:
-
-
-when terraform apply ran, it returns 4 relevant outputs:
-
-Output the public IP of the Bastion Host
--
-- first setup bastion by scp your local .pem file to the bastion: ```scp -i ~/.ssh/key-pair-name.pem``` ( make sure youve exported your admin level user cred. AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY) 
-- ssh to bastion
-
-Output the private IP of the EC2 Instance
--
-- after setting the bastion, you would be able to ssh the private ip of the nginx from the bastion using the .pem file
-
-Output the public IP of the NAT Gateway
--
-
-Output the DNS name of the ALB to access the Nginx server
--
-
-
-shell
-Copy code
-terraform destroy
-Support
-For queries or support related to this infrastructure, please contact [Your Email/Contact Information].
-
-Submission URLs
-Web Application: [Web Application URL]
-GitHub Repository: [GitHub Repository URL]
-Please replace [Web Application URL], [GitHub Repository URL], [BASTION_PUBLIC_IP], and [PRIVATE_INSTANCE_IP] with actual values from your Terraform output and GitHub repository.
-
-python
-Copy code
-
-### Notes for Submission:
-- Make sure to include the actual URLs where indicated in the 'Submission URLs' section.
-- Review and test all steps in the 'Deployment Instructions' to ensure they work as intended.
-- Customize the 'Support' section with your contact information or relevant details.
-- Add any additional instructions or notes that might be helpful for the HR manager or other reviewers.
-
-
 
