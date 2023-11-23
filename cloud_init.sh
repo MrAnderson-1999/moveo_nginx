@@ -4,6 +4,7 @@ RED='\033[0;91m'
 OFF='\033[0m'
 
 echo -e "${GREEN}Cloud Init Script started${OFF}\n";
+sudo apt-get update; sudo apt-get upgrade;
 # Clone your project repository
 if [ -d "moveo_nginx" ]; then
     echo -e "${GREEN}---REPO ALREADY EXISTS---${OFF}\n";
@@ -67,3 +68,10 @@ else
     echo -e "${RED}Failed Initializing${OFF}\n";
     exit 1; # Exit the script if image initialization fails.
 fi
+
+echo -e "${GREEN}---INSTALL MICROK8S---${OFF}\n";
+sudo apt update && sudo apt install snapd -y
+sudo snap install microk8s --classic
+sudo usermod -a -G microk8s $USER
+sudo chown -f -R $USER ~/.kube
+echo -e "${GREEN}---SCRIPT FINISHED---${OFF}\n";
