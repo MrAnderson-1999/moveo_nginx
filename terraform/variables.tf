@@ -10,7 +10,7 @@ variable "instance_type_bastion" {
 
 variable "instance_type_private" {
   description = "Instance type for the private instance"
-  default     = "t2.medium"
+  default     = "t2.micro"
 }
 
 variable "key_name" {

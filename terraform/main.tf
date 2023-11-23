@@ -52,6 +52,18 @@ resource "aws_subnet" "my_public_subnet" {
   }
 }
 
+# Create a Public Subnet
+resource "aws_subnet" "my_public_subnet_2" {
+  vpc_id                  = aws_vpc.my_vpc.id
+  cidr_block              = "10.0.3.0/24"
+  availability_zone       = "us-east-1b"  
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "moveo-public-subnet-2"
+  }
+}
+
 # Create a Private Subnet
 resource "aws_subnet" "my_private_subnet" {
   vpc_id                  = aws_vpc.my_vpc.id
@@ -114,17 +126,9 @@ resource "aws_security_group" "my_ssh_sg" {
   }
 }
 
-# Security Group for HTTP access
+# Security Group for private instance HTTP access
 resource "aws_security_group" "my_http_sg" {
   vpc_id = aws_vpc.my_vpc.id
-
-  ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 
   # Additional egress rule for HTTP traffic
   egress {
@@ -135,6 +139,14 @@ resource "aws_security_group" "my_http_sg" {
     description = "Allow outbound HTTP traffic"
   }
 
+  # Allow inbound traffic from ALB on HTTP port
+  ingress {
+    description      = "HTTP from ALB"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    security_groups  = [aws_security_group.alb_sg.id]
+  }
 
   # Outbound rule to allow all outbound traffic to the internet via NAT
   egress {
@@ -224,13 +236,110 @@ resource "aws_route_table_association" "public_subnet_association" {
 
 
 
+# Application Load Balancer (ALB) Resource
+resource "aws_lb" "my_alb" {
+  name               = "moveo-alb"
+  load_balancer_type = "application"
+  subnets            = [aws_subnet.my_public_subnet.id,aws_subnet.my_public_subnet_2.id] # Use public subnet ID
+  security_groups    = [aws_security_group.alb_sg.id]
+
+
+  tags = {
+    Name = "moveo-application-load-balancer"
+  }
+}
+
+# Security Group for ALB
+resource "aws_security_group" "alb_sg" {
+  name        = "alb-security-group"
+  description = "Security group for ALB"
+  vpc_id      = aws_vpc.my_vpc.id
+
+  # Ingress traffic on HTTP and HTTPS
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Outbound traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "moveo-alb-security-group"
+  }
+}
+
+# Target Group for EC2 Instances
+resource "aws_lb_target_group" "my_tg" {
+  name     = "moveo-target-group"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.my_vpc.id
+
+  health_check {
+    enabled             = true
+    interval            = 30
+    path                = "/"
+    protocol            = "HTTP"
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+
+  tags = {
+    Name = "moveo-target-group"
+  }
+}
+
+# Listener for ALB
+resource "aws_lb_listener" "front_end" {
+  load_balancer_arn = aws_lb.my_alb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.my_tg.arn
+  }
+}
+
+# Register EC2 Instances with Target Group
+resource "aws_lb_target_group_attachment" "tg_attachment" {
+  target_group_arn = aws_lb_target_group.my_tg.arn
+  target_id        = aws_instance.my_instance.id
+  port             = 80
+}
+
+
+
+
+
+
+
+
+
+
 
 
 # Public Subnet NACL
 resource "aws_network_acl" "public-acl" {
   vpc_id = aws_vpc.my_vpc.id
 
-  # Allow inbound HTTP and HTTPS traffic
+  # Allow inbound HTTP traffic
   ingress {
     protocol   = "tcp"
     rule_no    = 100
@@ -319,6 +428,10 @@ resource "aws_network_acl_association" "public_acl_association" {
   network_acl_id = aws_network_acl.public-acl.id
   subnet_id      = aws_subnet.my_public_subnet.id
 }
+resource "aws_network_acl_association" "public_2_acl_association" {
+  network_acl_id = aws_network_acl.public-acl.id
+  subnet_id      = aws_subnet.my_public_subnet_2.id
+}
 
 # Private Subnet NACL
 resource "aws_network_acl" "private-acl" {
@@ -334,10 +447,20 @@ resource "aws_network_acl" "private-acl" {
     to_port    = 22
   }
 
-  # Allow inbound responses (Ephemeral Ports)
+  # Allow outbound HTTP and HTTPS traffic
   ingress {
     protocol   = "tcp"
     rule_no    = 110
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 80
+    to_port    = 80
+  }
+
+  # Allow inbound responses (Ephemeral Ports)
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 120
     action     = "allow"
     cidr_block = "0.0.0.0/0"
     from_port  = 1024
@@ -389,6 +512,23 @@ resource "aws_network_acl_association" "private_acl_association" {
 
 
 
+# Fetch the existing hosted zone details
+data "aws_route53_zone" "existing_zone" {
+  name = "humanity-project.com"
+}
+
+# Create a DNS record for the root domain (humanity-project.com) pointing to the ALB
+resource "aws_route53_record" "root_record" {
+  zone_id = data.aws_route53_zone.existing_zone.zone_id
+  name    = "humanity-project.com"
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.my_alb.dns_name
+    zone_id                = aws_lb.my_alb.zone_id
+    evaluate_target_health = true
+  }
+}
 
 
 
@@ -430,4 +570,9 @@ output "private_instance_ip" {
 # Output the public IP of the NAT Gateway
 output "nat_gateway_ip" {
   value = aws_nat_gateway.my_nat_gateway.public_ip
+}
+
+# Output the DNS name of the ALB to access the Nginx server
+output "alb_dns_name" {
+  value = aws_lb.my_alb.dns_name
 }
