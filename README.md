@@ -91,4 +91,7 @@ After running terraform apply, you'll receive these key outputs:
 ## Submission Links
 1. **Application URL**: [http://humanity-project.com](http://humanity-project.com)
 2. **GitHub Repository**: [GitHub Repository URL](https://github.com/MrAnderson-1999/moveo_nginx)
+---
 
+## Sources
+ACL's and Security groups levels: https://www.linkedin.com/pulse/connecting-internet-from-ec2-instance-private-subnet-aws-thandra/
