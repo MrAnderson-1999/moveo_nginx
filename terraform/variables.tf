@@ -8,6 +8,16 @@ variable "instance_type_bastion" {
   default     = "t2.micro"
 }
 
+variable "existing_zone_id" {
+  description = "The zone id of the already existing zone"
+  default     = "Z0283867TKPLYDB766JW"
+}
+
+variable "domain_name" {
+  description = "The domain name url of the desired A record"
+  default     = "humanity-project.com"
+}
+
 variable "instance_type_private" {
   description = "Instance type for the private instance"
   default     = "t2.micro"
@@ -83,11 +93,6 @@ variable "user_data_script" {
       echo -e "$${RED}Failed Initializing$${OFF}\n";
       exit 1;
   fi
-  echo -e "$${GREEN}---INSTALL MICROK8S---$${OFF}\n";
-  sudo apt update && sudo apt install snapd -y
-  sudo snap install microk8s --classic
-  sudo usermod -a -G microk8s $USER
-  sudo chown -f -R $USER ~/.kube
   echo -e "$${GREEN}---SCRIPT FINISHED---$${OFF}\n";
   EOF
 }
