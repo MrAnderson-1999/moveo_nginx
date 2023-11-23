@@ -29,7 +29,7 @@ Deploy a robust, secure AWS infrastructure with Terraform, featuring an Nginx se
 - AWS Account with appropriate permissions.
 - Terraform (version 1.2.0 or later).
 - SSH key pair registered in AWS.
-- Registered domain name AND its hosted zone
+- Registered domain name AND attached hosted zone
 
 ## Deployment Instructions
 **Clone git**
