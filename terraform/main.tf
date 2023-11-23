@@ -13,6 +13,10 @@ provider "aws" {
   region = "us-east-1"
 }
 
+
+
+
+
 # Create a Virtual Private Cloud (VPC)
 resource "aws_vpc" "my_vpc" {
   cidr_block = "10.0.0.0/16"
@@ -32,6 +36,10 @@ resource "aws_internet_gateway" "my_igw" {
     Name = "moveo-igw"
   }
 }
+
+
+
+
 
 # Create a Public Subnet
 resource "aws_subnet" "my_public_subnet" {
@@ -54,6 +62,14 @@ resource "aws_subnet" "my_private_subnet" {
   }
 }
 
+
+
+
+
+
+
+
+
 # Security Group for Bastion Host SSH access
 resource "aws_security_group" "bastion_ssh_sg" {
   vpc_id = aws_vpc.my_vpc.id
@@ -66,8 +82,7 @@ resource "aws_security_group" "bastion_ssh_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # IP whitelist POOL
   }
-
-  # Outbound rule to allow all outbound traffic
+  # Outbound rule to allow all outbound traffic to the internet
   egress {
     from_port   = 0
     to_port     = 0
@@ -81,7 +96,7 @@ resource "aws_security_group" "bastion_ssh_sg" {
 }
 
 
-# Security Group for SSH access
+# Security Group for private instance
 resource "aws_security_group" "my_ssh_sg" {
   vpc_id = aws_vpc.my_vpc.id
 
@@ -92,14 +107,6 @@ resource "aws_security_group" "my_ssh_sg" {
     to_port         = 22
     protocol        = "tcp"
     security_groups = [aws_security_group.bastion_ssh_sg.id]
-  }
-
-  # Outbound rule to allow all outbound traffic to the internet via the NAT Gateway
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
@@ -119,7 +126,17 @@ resource "aws_security_group" "my_http_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Outbound rule to allow all outbound traffic to the internet via the NAT Gateway
+  # Additional egress rule for HTTP traffic
+  egress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow outbound HTTP traffic"
+  }
+
+
+  # Outbound rule to allow all outbound traffic to the internet via NAT
   egress {
     from_port   = 0
     to_port     = 0
@@ -131,6 +148,9 @@ resource "aws_security_group" "my_http_sg" {
     Name = "moveo-http-security-group"
   }
 }
+
+
+
 
 # Elastic IP for the NAT Gateway
 resource "aws_eip" "my_eip" {
@@ -151,6 +171,12 @@ resource "aws_nat_gateway" "my_nat_gateway" {
     Name = "moveo-nat-gateway"
   }
 }
+
+
+
+
+
+
 
 # Route Table for the Private Subnet
 resource "aws_route_table" "private_subnet_route" {
@@ -192,32 +218,203 @@ resource "aws_route_table_association" "public_subnet_association" {
   route_table_id = aws_route_table.public_subnet_route.id
 }
 
-# EC2 Instance in the Private Subnet
-resource "aws_instance" "my_instance" {
-  ami                    = "ami-0fc5d935ebf8bc3bc"
-  instance_type          = "t2.micro"
-  subnet_id              = aws_subnet.my_private_subnet.id
-  vpc_security_group_ids = [aws_security_group.my_ssh_sg.id, aws_security_group.my_http_sg.id]
-  key_name               = "moveo-kp"
+
+
+
+
+
+
+
+
+# Public Subnet NACL
+resource "aws_network_acl" "public-acl" {
+  vpc_id = aws_vpc.my_vpc.id
+
+  # Allow inbound HTTP and HTTPS traffic
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 80
+    to_port    = 80
+  }
+
+  # Inbound SSH - allow traffic on port 22
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 130
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 22
+    to_port    = 22
+  }
+
+
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 110
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 443
+    to_port    = 443
+  }
+
+  # Allow outbound HTTP and HTTPS traffic
+  egress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 80
+    to_port    = 80
+  }
+
+  # Outbound rules for allowing traffic to the internet
+  egress {
+    protocol   = "tcp"
+    rule_no    = 130
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 22
+    to_port    = 22
+  }
+
+  egress {
+    protocol   = "tcp"
+    rule_no    = 110
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 443
+    to_port    = 443
+  }
+
+  # Allow inbound and outbound traffic for Ephemeral Ports
+  # Adjust the rule numbers if necessary
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 120
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
+
+  egress {
+    protocol   = "tcp"
+    rule_no    = 120
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
 
   tags = {
-    Name = "moveo-instance"
+    Name = "moveo-public-acl"
   }
 }
 
 
-# Create a Bastion Host in the Public Subnet
-resource "aws_instance" "bastion" {
-  ami           = "ami-0fc5d935ebf8bc3bc"
-  instance_type = "t2.micro"
-  subnet_id     = aws_subnet.my_public_subnet.id
-  vpc_security_group_ids = [aws_security_group.bastion_ssh_sg.id]
-  key_name      = "moveo-kp"    
+resource "aws_network_acl_association" "public_acl_association" {
+  network_acl_id = aws_network_acl.public-acl.id
+  subnet_id      = aws_subnet.my_public_subnet.id
+}
 
-  tags = {
-    Name = "moveo-bastion"
+# Private Subnet NACL
+resource "aws_network_acl" "private-acl" {
+  vpc_id = aws_vpc.my_vpc.id
+
+  # Allow inbound SSH from Bastion's Security Group
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "10.0.1.0/24"
+    from_port  = 22
+    to_port    = 22
   }
 
+  # Allow inbound responses (Ephemeral Ports)
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 110
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
+
+  # Allow outbound HTTP and HTTPS traffic
+  egress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 80
+    to_port    = 80
+  }
+
+  egress {
+    protocol   = "tcp"
+    rule_no    = 110
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 443
+    to_port    = 443
+  }
+
+  # Allow outbound traffic for Ephemeral Ports
+  egress {
+    protocol   = "tcp"
+    rule_no    = 120
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 1024
+    to_port    = 65535
+  }
+
+  tags = {
+    Name = "moveo-private-acl"
+  }
+}
+
+
+resource "aws_network_acl_association" "private_acl_association" {
+  network_acl_id = aws_network_acl.private-acl.id
+  subnet_id      = aws_subnet.my_private_subnet.id
+}
+
+
+
+
+
+
+
+
+
+
+# Instances
+resource "aws_instance" "my_instance" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type_private
+  subnet_id              = aws_subnet.my_private_subnet.id
+  vpc_security_group_ids = [aws_security_group.my_ssh_sg.id, aws_security_group.my_http_sg.id]
+  key_name               = var.key_name
+  user_data              = var.user_data_script
+  tags = {
+    Name = "moveo-private-instance"
+  }
+}
+
+resource "aws_instance" "bastion" {
+  ami                    = var.ami_id
+  instance_type          = var.instance_type_bastion
+  subnet_id              = aws_subnet.my_public_subnet.id
+  vpc_security_group_ids = [aws_security_group.bastion_ssh_sg.id]
+  key_name               = var.key_name
+  tags = {
+    Name = "moveo-bastion-instance"
+  }
 }
 
 # Output the public IP of the Bastion Host
@@ -225,7 +422,12 @@ output "bastion_public_ip" {
   value = aws_instance.bastion.public_ip
 }
 
-# Output the public IP of the EC2 Instance in the Private Subnet
+# Output the private IP of the EC2 Instance
 output "private_instance_ip" {
   value = aws_instance.my_instance.private_ip
+}
+
+# Output the public IP of the NAT Gateway
+output "nat_gateway_ip" {
+  value = aws_nat_gateway.my_nat_gateway.public_ip
 }
