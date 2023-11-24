@@ -25,7 +25,7 @@ variable "instance_type_private" {
 
 variable "key_name" {
   description = "Key pair name"
-  default     = "moveo-kp"
+  default     = "moveo-pair"
 }
 
 variable "user_data_script" {

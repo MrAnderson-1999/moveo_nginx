@@ -5,24 +5,25 @@ resource "aws_network_acl" "public-acl" {
   # Allow inbound HTTP traffic
   ingress {
     protocol   = "tcp"
-    rule_no    = 100
+    rule_no    = 120
     action     = "allow"
     cidr_block = "0.0.0.0/0"
     from_port  = 80
     to_port    = 80
   }
 
+
   # Inbound SSH - allow traffic on port 22
   ingress {
     protocol   = "tcp"
-    rule_no    = 130
+    rule_no    = 100
     action     = "allow"
     cidr_block = "0.0.0.0/0"
     from_port  = 22
     to_port    = 22
   }
 
-
+  # Allow inbound HTTPS traffic
   ingress {
     protocol   = "tcp"
     rule_no    = 110
@@ -32,10 +33,10 @@ resource "aws_network_acl" "public-acl" {
     to_port    = 443
   }
 
-  # Allow outbound HTTP and HTTPS traffic
+  # Allow outbound HTTP  traffic
   egress {
     protocol   = "tcp"
-    rule_no    = 100
+    rule_no    = 120
     action     = "allow"
     cidr_block = "0.0.0.0/0"
     from_port  = 80
@@ -45,13 +46,14 @@ resource "aws_network_acl" "public-acl" {
   # Outbound rules for allowing traffic to the internet
   egress {
     protocol   = "tcp"
-    rule_no    = 130
+    rule_no    = 100
     action     = "allow"
     cidr_block = "0.0.0.0/0"
     from_port  = 22
     to_port    = 22
   }
 
+  # Allow outbound  HTTPS traffic
   egress {
     protocol   = "tcp"
     rule_no    = 110
@@ -65,7 +67,7 @@ resource "aws_network_acl" "public-acl" {
   # Adjust the rule numbers if necessary
   ingress {
     protocol   = "tcp"
-    rule_no    = 120
+    rule_no    = 90
     action     = "allow"
     cidr_block = "0.0.0.0/0"
     from_port  = 1024
@@ -74,7 +76,7 @@ resource "aws_network_acl" "public-acl" {
 
   egress {
     protocol   = "tcp"
-    rule_no    = 120
+    rule_no    = 90
     action     = "allow"
     cidr_block = "0.0.0.0/0"
     from_port  = 1024
