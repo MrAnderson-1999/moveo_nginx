@@ -72,6 +72,11 @@ fi
 echo -e "${GREEN}---INSTALL MICROK8S---${OFF}\n";
 sudo apt update && sudo apt install snapd -y
 sudo snap install microk8s --classic
-sudo usermod -a -G microk8s $USER
-sudo chown -f -R $USER ~/.kube
+sudo usermod -a -G microk8s ubuntu
+sudo chown -f -R ubuntu ~/.kube
+sudo microk8s enable dns
+sudo microk8s enable ingress
+sudo microk8s enable dashboard
+
+
 echo -e "${GREEN}---SCRIPT FINISHED---${OFF}\n";

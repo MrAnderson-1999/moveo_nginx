@@ -20,13 +20,25 @@ variable "domain_name" {
 
 variable "instance_type_private" {
   description = "Instance type for the private instance"
-  default     = "t2.micro"
+  default     = "t2.medium"
 }
 
 variable "key_name" {
   description = "Key pair name"
   default     = "moveo-pair"
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 variable "user_data_script" {
   description = "User data script for private instance initialization"
