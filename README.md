@@ -89,7 +89,7 @@ After running terraform apply, you'll receive these key outputs:
 - To destroy the AWS resources:```terraform destroy```
 
 ## Submission Links
-1. **Application URL**: [http://humanity-project.com](http://humanity-project.com)
+1. **Application URL**: [https://humanity-project.com](http://humanity-project.com)
 2. **GitHub Repository**: [GitHub Repository URL](https://github.com/MrAnderson-1999/moveo_nginx)
 ---
 
