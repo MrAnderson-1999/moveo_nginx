@@ -1,4 +1,4 @@
-# AWS Nginx Infrastructure Deployment using Terraform
+# One command - Full AWS Nginx Infrastructure Deployment using Terraform
 
 ## Overview
 Deploy a robust, secure AWS infrastructure with Terraform, featuring an Nginx server in a private subnet. Accessible through a custom DNS name linked to an Application Load Balancer (ALB), the setup also includes a Bastion host for secure private subnet access. 
