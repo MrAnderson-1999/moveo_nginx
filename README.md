@@ -60,10 +60,11 @@ variable "domain_name" {
 
 ### Initiate Terraform Workflow
 - ```cd moveo-nginx/terraform```
-- Initialize Terraform: ```terraform init```
-- Review the Terraform Plan: ```terraform plan```
-- Apply the Terraform Configuration: ```terraform apply```
-- May take up to 5 minutes to be full functional. Look out for output logs variables. includes bastion public ip,kubernetes cluster private ip etc 
+- Initialize Terraform, ```terraform init```
+- Review the Terraform Plan, ```terraform plan```
+- Apply the Terraform Configuration, ```terraform apply```
+- Look out for useful output logs variables after ```terraform apply``` finish. includes the bastion public ip and the kubernetes cluster private ip etc .
+- The whole Iac may take up to 5 minutes to be fully functional. When it does, you will see **'yo this is nginx'** text when entering the ```domain_name``` URL.
 
 # Uses and Customization
 
