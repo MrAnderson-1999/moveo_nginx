@@ -38,13 +38,16 @@ resource "aws_internet_gateway" "my_igw" {
 }
 
 
-
+data "aws_availability_zones" "available" {
+  state = "available"
+}
 
 
 # Create a Public Subnet
 resource "aws_subnet" "my_public_subnet" {
   vpc_id                  = aws_vpc.my_vpc.id
   cidr_block              = "10.0.1.0/24"
+  availability_zone       = data.aws_availability_zones.available.names[0]  
   map_public_ip_on_launch = true
 
   tags = {
@@ -56,7 +59,7 @@ resource "aws_subnet" "my_public_subnet" {
 resource "aws_subnet" "my_public_subnet_2" {
   vpc_id                  = aws_vpc.my_vpc.id
   cidr_block              = "10.0.3.0/24"
-  availability_zone       = "us-east-1b"  
+  availability_zone       = data.aws_availability_zones.available.names[1]  
   map_public_ip_on_launch = true
 
   tags = {
@@ -68,6 +71,7 @@ resource "aws_subnet" "my_public_subnet_2" {
 resource "aws_subnet" "my_private_subnet" {
   vpc_id                  = aws_vpc.my_vpc.id
   cidr_block              = "10.0.2.0/24"
+  availability_zone       = data.aws_availability_zones.available.names[0]  
 
   tags = {
     Name = "moveo-private-subnet"
@@ -168,3 +172,5 @@ resource "aws_acm_certificate_validation" "cert" {
   certificate_arn         = aws_acm_certificate.my_cert.arn
   validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
 }
+
+
