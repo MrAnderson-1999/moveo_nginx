@@ -2,7 +2,8 @@
 
 ## Overview
 Deploy a robust, secure AWS infrastructure with Terraform, featuring an Nginx server in a private subnet. Accessible through a custom DNS name linked to an Application Load Balancer (ALB), the setup also includes a Bastion host for secure private subnet access. 
-![image](https://github.com/MrAnderson-1999/moveo_nginx/assets/87763298/6b260e31-ec4e-4e10-bd57-fe972d1bd65c)
+![image](https://github.com/MrAnderson-1999/moveo_nginx/assets/87763298/3f781ec6-e52f-43ee-bfe8-d1461126d944)
+
 
 
 
@@ -32,7 +33,7 @@ Deploy a robust, secure AWS infrastructure with Terraform, featuring an Nginx se
 - SSH key pair registered in AWS.
 - Registered domain name AND attached hosted zone
 
-## Deployment Instructions
+# Deployment Instructions
 **Clone git**
 - ```git clone https://github.com/MrAnderson-1999/moveo_nginx.git```
 
@@ -44,7 +45,7 @@ Deploy a robust, secure AWS infrastructure with Terraform, featuring an Nginx se
    - ```export AWS_ACCESS_KEY_ID="<Access ID>"```
    - ```export AWS_SECRET_ACCESS_KEY="<Access SECRET>"```
    - 
-**Modify existing_zone_id AND domain_name variables.tf**
+- **Modify existing_zone_id AND domain_name variables.tf**
 ```variable "existing_zone_id" {
   description = "The zone id of the already existing zone"
   default     = "Z0283867TKPLYDB766JW"
