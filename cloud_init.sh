@@ -77,6 +77,6 @@ sudo chown -f -R ubuntu ~/.kube
 sudo microk8s enable dns
 sudo microk8s enable ingress
 sudo microk8s enable dashboard
-
+sudo microk8s kubectl apply -f /kubernetes/ngnix.yaml
 
 echo -e "${GREEN}---SCRIPT FINISHED---${OFF}\n";
