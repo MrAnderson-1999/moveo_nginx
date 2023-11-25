@@ -50,7 +50,7 @@ Deploy a robust, secure AWS infrastructure and manage with Terraform using only 
   
 ### Modify existing_zone_id AND domain_name
 - Make sure you have domain name and a hosted zone already bought and setup on route 53
-- Adjust accordingle the following variable from the ```variables.tf``` file
+- Adjust accordingle the following variables at the ```variables.tf``` file
 ```variable "existing_zone_id" {
   description = "The zone id of the already existing hosted zone"
   default     = "Z0283867TKPLYDB766JW"
