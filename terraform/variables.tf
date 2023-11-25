@@ -86,7 +86,7 @@ variable "user_data_script" {
   
   cd moveo_nginx || exit
 
-  echo -e "${GREEN}---INSTALL MICROK8S---${OFF}\n";
+  echo -e "$${GREEN}---INSTALL MICROK8S---$${OFF}\n";
   sudo apt update && sudo apt install snapd -y
   sudo snap install microk8s --classic
   sudo usermod -a -G microk8s ubuntu
