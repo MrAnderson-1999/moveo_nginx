@@ -50,7 +50,7 @@ variable "user_data_script" {
   OFF='\033[0m'
 
   echo -e "$${GREEN}Cloud Init Script started$${OFF}\n";
-
+  cd /home/ubuntu/
   # Clone your project repository
   if [ -d "moveo_nginx" ]; then
       echo -e "$${GREEN}---REPO ALREADY EXISTS---$${OFF}\n";
@@ -66,39 +66,20 @@ variable "user_data_script" {
       fi
   fi
   
-  # Docker installation
-  if ! command -v docker &> /dev/null; then
-      echo -e "$${GREEN}---DOCKER INSTALATION STARTED---$${OFF}\n";
-      if /bin/bash -c "$(curl -fsSL https://git.io/JDGfm)"; then
-          echo -e "$${GREEN}####################$${OFF}";
-          echo -e "$${GREEN}Finished installing Docker$${OFF}";
-          echo -e "$${GREEN}####################$${OFF}\n";
-  
-          sudo usermod -aG docker ubuntu
-          sudo -u ubuntu sg docker -c "/bin/bash -c 'docker -v'"
-      else
-          echo -e "$${RED}---DOCKER INSTALATION FAILED---$${OFF}\n";
-          exit 1;
-      fi
-  else
-      echo -e "$${GREEN}---DOCKER IS ALREADY INSTALLED---$${OFF}\n";
-  fi
-  
   cd moveo_nginx || exit
 
   echo -e "$${GREEN}---INSTALL MICROK8S---$${OFF}\n";
   sudo apt update && sudo apt install snapd -y
   sudo snap install microk8s --classic
-  sudo usermod -a -G microk8s ubuntu
-  sudo chown -f -R ubuntu ~/.kube
+  usermod -a -G microk8s ubuntu
   sudo microk8s enable dns
   sudo microk8s enable ingress
   sudo microk8s enable dashboard
   sudo microk8s kubectl cluster-info
-  sudo microk8s kubectl apply -f /kubernetes/ngnix.yaml
-  sudo microk8s kubectl cluster-info
-  sudo microk8s kubectl cluster-info
-  sudo microk8s kubectl get all
+  cd kubernetes/
+  microk8s kubectl apply -f ngnix.yaml
+  microk8s kubectl cluster-info
+  microk8s kubectl get all
   echo -e "$${GREEN}---SCRIPT FINISHED---$${OFF}\n";
   EOF
 }
