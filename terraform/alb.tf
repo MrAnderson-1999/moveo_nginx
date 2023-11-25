@@ -48,7 +48,7 @@ resource "aws_security_group" "alb_sg" {
 # Target Group for EC2 Instances
 resource "aws_lb_target_group" "my_tg" {
   name     = "moveo-target-group"
-  port     = 80
+  port     = 30007 # kubernetes service port, needs to be the NodePort
   protocol = "HTTP" # Ngnix runnin http
   vpc_id   = aws_vpc.my_vpc.id
 
@@ -103,5 +103,5 @@ resource "aws_lb_listener" "https" {
 resource "aws_lb_target_group_attachment" "tg_attachment" {
   target_group_arn = aws_lb_target_group.my_tg.arn
   target_id        = aws_instance.my_instance.id
-  port             = 80
+  port             = 30007 # NodePort
 }

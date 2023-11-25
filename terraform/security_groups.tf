@@ -58,8 +58,8 @@ resource "aws_security_group" "my_http_sg" {
   # Allow inbound traffic from ALB on HTTP port
   ingress {
     description      = "HTTP from ALB"
-    from_port        = 80
-    to_port          = 80
+    from_port        = 30007
+    to_port          = 30007
     protocol         = "tcp"
     security_groups  = [aws_security_group.alb_sg.id]
   }

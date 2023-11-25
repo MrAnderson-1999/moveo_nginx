@@ -20,13 +20,25 @@ variable "domain_name" {
 
 variable "instance_type_private" {
   description = "Instance type for the private instance"
-  default     = "t2.micro"
+  default     = "t2.medium"
 }
 
 variable "key_name" {
   description = "Key pair name"
   default     = "moveo-pair"
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 variable "user_data_script" {
   description = "User data script for private instance initialization"
@@ -73,26 +85,20 @@ variable "user_data_script" {
   fi
   
   cd moveo_nginx || exit
-  
-  echo -e "$${GREEN}---BUILD IMAGE STARTED---$${OFF}\n";
-  if docker build -t moveo-nginx -f nginx/Dockerfile nginx/; then
-      echo -e "$${GREEN}####################$${OFF}";
-      echo -e "$${GREEN}Finished Building$${OFF}";
-      echo -e "$${GREEN}####################$${OFF}\n";
-  else
-      echo -e "$${RED}---BUILD IMAGE FAILED---$${OFF}\n";
-      exit 1;
-  fi
-  sleep 2
-  echo -e "$${GREEN}---INIT IMAGE STARTED---$${OFF}\n";
-  if docker run --name nginx-container -p 80:80 -d moveo-nginx; then
-      echo -e "$${GREEN}####################$${OFF}";
-      echo -e "$${GREEN}Finished Initializing$${OFF}";
-      echo -e "$${GREEN}####################$${OFF}\n";
-  else
-      echo -e "$${RED}Failed Initializing$${OFF}\n";
-      exit 1;
-  fi
+
+  echo -e "${GREEN}---INSTALL MICROK8S---${OFF}\n";
+  sudo apt update && sudo apt install snapd -y
+  sudo snap install microk8s --classic
+  sudo usermod -a -G microk8s ubuntu
+  sudo chown -f -R ubuntu ~/.kube
+  sudo microk8s enable dns
+  sudo microk8s enable ingress
+  sudo microk8s enable dashboard
+  sudo microk8s kubectl cluster-info
+  sudo microk8s kubectl apply -f /kubernetes/ngnix.yaml
+  sudo microk8s kubectl cluster-info
+  sudo microk8s kubectl cluster-info
+  sudo microk8s kubectl get all
   echo -e "$${GREEN}---SCRIPT FINISHED---$${OFF}\n";
   EOF
 }
