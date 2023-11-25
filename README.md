@@ -2,7 +2,8 @@
 
 ## Overview
 Deploy a robust, secure AWS infrastructure with Terraform, featuring an Nginx server in a private subnet. Accessible through a custom DNS name linked to an Application Load Balancer (ALB), the setup also includes a Bastion host for secure private subnet access. 
-![image](https://github.com/MrAnderson-1999/moveo_nginx/assets/87763298/15371ddc-1cd2-4243-85ad-a4494adf779f)
+![image](https://github.com/MrAnderson-1999/moveo_nginx/assets/87763298/6b260e31-ec4e-4e10-bd57-fe972d1bd65c)
+
 
 
 ## Key Infrastructure Components
