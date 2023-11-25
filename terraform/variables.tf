@@ -28,6 +28,11 @@ variable "key_name" {
   default     = "moveo-pair"
 }
 
+variable "provider_region" {
+  description = "The main region of the VPC"
+  default     = "us-east-1"
+}
+
 
 
 
