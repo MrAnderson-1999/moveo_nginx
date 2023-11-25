@@ -7,7 +7,7 @@ Deploy a robust, secure AWS infrastructure and manage with Terraform using only 
 
 
 
-## Key Infrastructure Components
+## Infrastructure Components and Featuers
 - **VPC**: Includes both public and private subnets.
 - **EC2 Instances**: 
    - Bastion host in public subnet for secure access.
@@ -15,7 +15,11 @@ Deploy a robust, secure AWS infrastructure and manage with Terraform using only 
 - **Application Load Balancer (ALB)**: Directs HTTP traffic to the Nginx server.
 - **Route 53**: Manages DNS for ALB.
 - **Security Measures**: Security Groups and Network ACLs to regulate traffic flow.
+--
+- **Automated Microk8s Single noded Cluster Deployment**: ```user_data``` script initiated when cluster ec2 start. it cloning the repo, download and install microk8s, run deployment  ```nginx.yaml```
+- **Bastion instance for reaching the Cluster**: The Cluster is configured to be sshable only from the Bastion using the same key-pair as for the Bastion
 
+   
 ## Repository Structure
 - ```main.tf```: Core Terraform configuration, VPC, Subnets, Route tables and assosiations, NAT and Elastic ip
 - ```variables.tf```: Definitions for readability  and customization.
