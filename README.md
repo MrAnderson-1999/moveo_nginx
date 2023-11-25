@@ -20,11 +20,10 @@ Deploy a robust, secure AWS infrastructure and manage with Terraform using only 
 - ```main.tf```: Core Terraform configuration, VPC, Subnets, Route tables and assosiations, NAT and Elastic ip
 - ```variables.tf```: Definitions for readability  and customization.
 - ```outputs.tf```: Displays key information post-deployment.
-- ```vpc.tf```: VPC and subnet configurations.
 - ```security_groups.tf```: Defines security rules.
 - ```ec2_instances.tf```: EC2 instance setups.
 - ```alb.tf```: Application Load Balancer settings.
-- ```route53.tf```: DNS settings for Route 53.
+- ```route53.tf```: DNS settings for Route 53.And certs handling
 
 
 ## Prerequisites
