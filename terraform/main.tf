@@ -7,6 +7,14 @@ terraform {
   }
 
   required_version = ">= 1.2.0"
+
+  backend "remote" {
+    organization = "moveo-nginx"
+
+    workspaces {
+      name = "moveo_nginx"
+    }
+  }
 }
 
 provider "aws" {

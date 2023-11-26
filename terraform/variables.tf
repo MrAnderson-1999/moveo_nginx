@@ -74,15 +74,14 @@ variable "user_data_script" {
   cd moveo_nginx || exit
 
   echo -e "$${GREEN}---INSTALL MICROK8S---$${OFF}\n";
-  sudo apt update && sudo apt install snapd -y
-  sudo snap install microk8s --classic
+  apt update && apt install snapd -y
+  snap install microk8s --classic
   usermod -a -G microk8s ubuntu
-  sudo microk8s enable dns
-  sudo microk8s enable ingress
-  sudo microk8s enable dashboard
-  sudo microk8s kubectl cluster-info
-  cd kubernetes/
-  microk8s kubectl apply -f ngnix.yaml
+  microk8s enable dns
+  microk8s enable ingress
+  microk8s enable dashboard
+  microk8s kubectl cluster-info
+  microk8s kubectl apply -f kubernetes/nginx.yaml
   microk8s kubectl cluster-info
   microk8s kubectl get all
   echo -e "$${GREEN}---SCRIPT FINISHED---$${OFF}\n";
