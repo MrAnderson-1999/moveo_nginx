@@ -53,7 +53,6 @@ variable "user_data_script" {
   GREEN='\033[1;32m'
   RED='\033[0;91m'
   OFF='\033[0m'
-
   echo -e "$${GREEN}Cloud Init Script started$${OFF}\n";
   cd /home/ubuntu/
   # Clone your project repository
@@ -70,7 +69,6 @@ variable "user_data_script" {
           exit 1;
       fi
   fi
-  
   cd moveo_nginx || exit
 
   echo -e "$${GREEN}---INSTALL MICROK8S---$${OFF}\n";
