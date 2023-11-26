@@ -15,8 +15,15 @@ spec:
       containers:
       - name: nginx
         image: one1212/moveo-ngnix:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+
 
 ---
 apiVersion: v1
