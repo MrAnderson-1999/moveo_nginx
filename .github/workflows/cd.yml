@@ -28,8 +28,8 @@ jobs:
         run: |
           cd terraform/
           terraform init
-          echo "BASTION=$(terraform output -raw bastion_public_ip)" >> $GITHUB_ENV 
-          echo "CLUSTER_IP=$(terraform output -raw private_instance_ip)" >> $GITHUB_ENV 
+          echo "BASTION=$(terraform output -raw bastion_public_ip)" >> "$GITHUB_ENV"
+          echo "CLUSTER_IP=$(terraform output -raw private_instance_ip)" >> "$GITHUB_ENV" 
 
       # The following steps assume secure handling of SSH keys and credentials
       - name: Create SSH Key File
