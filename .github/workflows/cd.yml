@@ -26,15 +26,14 @@ jobs:
 
       - name: Terraform local Init and Extract IP Addresses
         run: |
+          env
           cd terraform/
           terraform init
           sleep 2
           terraform output -raw bastion_public_ip
           terraform output -raw private_instance_ip
           echo "BASTION='$(terraform output -raw bastion_public_ip)'" >> "$GITHUB_ENV"
-          echo $BASTION
           echo "CLUSTER='$(terraform output -raw private_instance_ip)'" >> "$GITHUB_ENV"
-          echo $CLUSTER
 
       # The following steps assume secure handling of SSH keys and credentials
       - name: Create SSH Key File
