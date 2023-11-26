@@ -1,4 +1,4 @@
-# One command - Full AWS Nginx Infrastructure Deployment using Terraform and Kubernetes
+# One Command - Full AWS Infrastructure Deployment using Terraform
 
 ## Overview
 Deploy a robust, secure AWS infrastructure and manage with Terraform using only ```terraform apply```, featuring an Nginx pod deployment in a single-node Microk8s private subnet EC2. Accessible through a custom DNS name linked to an Application Load Balancer (ALB) using HTTPS, the setup also includes a Bastion host for secure private subnet access and cluster managment. 
@@ -15,11 +15,13 @@ Deploy a robust, secure AWS infrastructure and manage with Terraform using only 
 - **Application Load Balancer (ALB)**: Directs HTTP traffic to the Nginx server.
 - **Route 53**: Manages DNS for ALB.
 - **Security Measures**: Security Groups and Network ACLs to regulate traffic flow.
---
-- **Automated Microk8s Single noded Cluster Deployment**: ```user_data``` script initiated when cluster ec2 start. it cloning the repo, download and install microk8s, run deployment  ```nginx.yaml```
-- **Bastion instance for reaching the Cluster**: The Cluster is configured to be sshable only from the Bastion using the same key-pair as for the Bastion
+- **Automates the Microk8s Single noded Cluster setup**:```user_data``` script initiated when cluster ec2 start. it cloning the repo, download and install microk8s, run deployment  ```nginx.yaml``` 
+- **Bastion**: The Cluster is configured to be sshable only from the Bastion using the same key-pair as for the Bastion
+- **NAT**: The Iac deploys Kubernetes cluster on a private subnet, it (and the kubernetes server API) can access internet using NAT
+- **Kube Deployment**: The cluster deploys an Nginx deployment on port 80, and get exposed from the instance via NodePort 30007
+- **A record provisioning**: An A record is created and ponited to the ALB id, which listens on port 80/443 and forward to the Cluster instance as HTTP traffic on port 30007
 
-   
+
 ## Repository Structure
 - ```main.tf```: Core Terraform configuration, VPC, Subnets, Route tables and assosiations, NAT and Elastic ip
 - ```variables.tf```: Definitions for readability  and customization.
@@ -102,7 +104,8 @@ After running terraform apply, you'll receive these key outputs:
 - ```alb_dns_name``` : ALB Public DNS Name which used as the A record to the cluster.
 
 ### Cleanup
-- To destroy the AWS resources run ```terraform destroy```
+- To destroy **ALL** the AWS resources run ```terraform destroy```
+- to destroy specific instance, use ```terraform taint some_aws_resource.resource_name``` and then apply.
 
 # Trouble shooting
 **Terraform apply wen fine, but cant see website after more then 5 minutes**
