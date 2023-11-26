@@ -1,0 +1,56 @@
+name: Deploy Infrastructure and Application
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+    
+    - name: AWS cred-env Step
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    - name: Login to Terraform Cloud
+      env:
+        TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+      run: |
+        terraform login
+
+    - name: Terraform Initialization
+      working-directory: moveo_nginx/terraform
+      run: terraform init
+    
+    # The actual Terraform Apply will be handled via Terraform Cloud UI.
+    
+    - name: Extract IP Addresses
+      run: |
+        echo "BASTION_IP=$(terraform output -raw bastion_public_ip)" >> $GITHUB_ENV
+        echo "CLUSTER_IP=$(terraform output -raw private_instance_ip)" >> $GITHUB_ENV
+
+    # The following steps assume secure handling of SSH keys and credentials
+    - name: Create SSH Key File
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.MOVEO_PAIR_PEM }}
+      run: |
+        mkdir -p /home/ubuntu/.ssh
+        echo "$SSH_PRIVATE_KEY" > /home/ubuntu/.ssh/moveo-pair.pem
+        chmod 400 /home/ubuntu/.ssh/moveo-pair.pem
+
+    # Replace 'moveo-pair.pem' handling with your secure approach
+
+    - name: SCP Key to Bastion Host
+      run: scp -i ~/.ssh/moveo-pair.pem ~/.ssh/moveo-pair.pem ubuntu@${{ env.BASTION_IP }}:
+
+    - name: Deploy to Kubernetes via Bastion
+      run: ssh -i ~/.ssh/moveo-pair.pem ubuntu@${{ env.BASTION_IP }} "ssh -i moveo-pair.pem ${CLUSTER_IP} 'microk8s kubectl apply -f moveo_nginx/kubernetes/nginx.yaml'"
