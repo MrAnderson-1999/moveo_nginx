@@ -26,7 +26,7 @@ jobs:
 
       - name: Login to Terraform Cloud
         run: |
-          cd moveo_nginx/terraform
+          cd $HOME/moveo_nginx/terraform
           terraform init
 
     
