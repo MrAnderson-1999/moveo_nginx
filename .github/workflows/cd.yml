@@ -23,13 +23,12 @@ jobs:
         run: echo "AWS credentials set"
 
       - name: Login to Terraform Cloud
+        working-directory: moveo_nginx/terraform
         env:
           TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
-        run: terraform login
+        run: |
+          terraform init
 
-      - name: Terraform Initialization
-        working-directory: moveo_nginx/terraform
-        run: terraform init
     
       # The actual Terraform Apply will be handled via Terraform Cloud UI.
       - name: Extract IP Addresses
