@@ -24,8 +24,9 @@ jobs:
         run: echo "Credentials set"
 
       - name: Login to Terraform Cloud
-        working-directory: moveo_nginx/terraform
-        run: terraform init
+        run: |
+          cd moveo_nginx/terraform
+          terraform init
 
     
       # The actual Terraform Apply will be handled via Terraform Cloud UI.
