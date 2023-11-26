@@ -2,8 +2,7 @@ name: Deploy Infrastructure and Application
 
 on:
   push:
-    branches:
-      - main'
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -47,6 +46,7 @@ jobs:
         mkdir -p $HOME/.ssh
         echo "$SSH_PRIVATE_KEY" > $HOME/.ssh/moveo-pair.pem
         chmod 400 $HOME/.ssh/moveo-pair.pem
+        
     # Deploy the pod
     - name: Deploy to Kubernetes via Bastion
       run: ssh -i $HOME/.ssh/moveo-pair.pem ubuntu@${{ steps.extract_ips.outputs.BASTION_IP }} "ssh -i moveo-pair.pem ${steps.extract_ips.outputs.CLUSTER_IP} 'microk8s kubectl apply -f moveo_nginx/kubernetes/nginx.yaml'"
