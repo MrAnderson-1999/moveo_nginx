@@ -116,12 +116,13 @@ After running terraform apply, you'll receive these key outputs:
 - **Verify its not the user_data script** : ```cat init.log``` to se if the initial installation and setup of the cluster were successful
 
 **Got error of credentials when run ```terraform plan/apply```**
-- Verify youve exported the ```AWS_ACCESS_KEY_ID``` AND ```AWS_SECRET_ACCESS_KEY``` correctly by running ```echo $AWS_ACCESS_KEY_ID```,```echo $AWS_SECRET_ACCESS_KEY``` on local pc. And so this credentials are of a Administrator level privelage aws user which the key-pair created by him.
+- Verify youve exported the ```AWS_ACCESS_KEY_ID``` AND ```AWS_SECRET_ACCESS_KEY``` correctly at the ![Modify section of the getting started](https://github.com/MrAnderson-1999/moveo_nginx#modify-existing_zone_id-and-domain_name). 
+
 
 
 ## Assignment Submission
 1. **Application URL**: [https://humanity-project.com](http://humanity-project.com)
-2. **GitHub Repository**: [GitHub Repository URL](https://github.com/MrAnderson-1999/moveo_nginx)
+2. [GitHub Repository URL](https://github.com/MrAnderson-1999/moveo_nginx)
 ---
 
 ## Sources
