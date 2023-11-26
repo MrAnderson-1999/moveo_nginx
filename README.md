@@ -1,7 +1,7 @@
 # One Command - Full AWS Infrastructure Deployment using Terraform
 
 ## Overview
-Deploy a robust, secure AWS infrastructure and manage with Terraform using only ```terraform apply```, featuring an Nginx pod deployment in a single-node Microk8s private subnet EC2. Accessible through a custom DNS name linked to an Application Load Balancer (ALB) using HTTPS, the setup also includes a Bastion host for secure private subnet access and cluster managment. 
+Deploy a robust and secure AWS infrastructure with Terraform by only using ```terraform apply```. featuring an Nginx pod deployment in a single-node Microk8s cluster within a private subnet EC2. Accessible through a custom DNS name linked to an Application Load Balancer (ALB) using HTTPS. the setup also includes a Bastion host for secure and restricted private subnet access and cluster managment. 
 ![image](https://github.com/MrAnderson-1999/moveo_nginx/assets/87763298/3f781ec6-e52f-43ee-bfe8-d1461126d944)
 
 
@@ -19,7 +19,7 @@ Deploy a robust, secure AWS infrastructure and manage with Terraform using only 
 - **Bastion**: The Cluster is configured to be sshable only from the Bastion using the same key-pair as for the Bastion
 - **NAT**: The Iac deploys Kubernetes cluster on a private subnet, it (and the kubernetes server API) can access internet using NAT
 - **Kube Deployment**: The cluster deploys an Nginx deployment on port 80, and get exposed from the instance via NodePort 30007
-- **A record provisioning**: An A record is created and ponited to the ALB id, which listens on port 80/443 and forward to the Cluster instance as HTTP traffic on port 30007
+- **A record provisioning**: An A record is created and ponited to the ALB id, which listens on port 80/443 and forward traffic to the Cluster instance as HTTP on port 30007
 
 
 ## Repository Structure
@@ -108,10 +108,10 @@ After running terraform apply, you'll receive these key outputs:
 - to destroy specific instance, use ```terraform taint some_aws_resource.resource_name``` and then apply.
 
 # Trouble shooting
-**Terraform apply wen fine, but cant see website after more then 5 minutes**
-- Verify the healtcheck is fine and traffic routed to pod : AWS target group health check via AWS UI
-- Verify the pod is running on the cluster : SSH the cluster via Bastion and verify its running the ngnix pod via ```microk8s kubectl get all```
-- Verify its not the user_data script : ```cat init.log``` to se if the initial installation and setup of the cluster were successful
+**Terraform apply went fine, but cant see website after more then 5 minutes**
+- **Verify the healtcheck is fine and traffic routed to pod** : AWS target group health check via AWS UI
+- **Verify the pod is running on the cluster** : SSH the cluster via Bastion and verify its running the ngnix pod via ```microk8s kubectl get all```
+- **Verify its not the user_data script** : ```cat init.log``` to se if the initial installation and setup of the cluster were successful
 
 **Got error of credentials when run ```terraform plan/apply```**
 - Verify youve exported the ```AWS_ACCESS_KEY_ID``` AND ```AWS_SECRET_ACCESS_KEY``` correctly by running ```echo $AWS_ACCESS_KEY_ID```,```echo $AWS_SECRET_ACCESS_KEY``` on local pc. And so this credentials are of a Administrator level privelage aws user which the key-pair created by him.
