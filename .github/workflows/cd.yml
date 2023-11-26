@@ -16,18 +16,16 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
     
-      - name: AWS cred-env Step
+      - name: AWS & Terraform cred-env Step
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: echo "AWS credentials set"
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+        run: echo "Credentials set"
 
       - name: Login to Terraform Cloud
         working-directory: moveo_nginx/terraform
-        env:
-          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
-        run: |
-          terraform init
+        run: terraform init
 
     
       # The actual Terraform Apply will be handled via Terraform Cloud UI.
