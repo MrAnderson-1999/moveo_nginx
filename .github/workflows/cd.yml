@@ -10,43 +10,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v1
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
     
-    - name: AWS cred-env Step
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: AWS cred-env Step
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: echo "AWS credentials set"
 
-    - name: Login to Terraform Cloud
-      env:
-        TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
-      run: |
-        terraform login
+      - name: Login to Terraform Cloud
+        env:
+          TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+        run: terraform login
 
-    - name: Terraform Initialization
-      working-directory: moveo_nginx/terraform
-      run: terraform init
+      - name: Terraform Initialization
+        working-directory: moveo_nginx/terraform
+        run: terraform init
     
-    # The actual Terraform Apply will be handled via Terraform Cloud UI.
-    - name: Extract IP Addresses
-      id: extract_ips
-      run: |
-        echo "::set-output name=BASTION_IP::$(terraform output -raw bastion_public_ip)"
-        echo "::set-output name=CLUSTER_IP::$(terraform output -raw private_instance_ip)"
+      # The actual Terraform Apply will be handled via Terraform Cloud UI.
+      - name: Extract IP Addresses
+        id: extract_ips
+        run: |
+          echo "::set-output name=BASTION_IP::$(terraform output -raw bastion_public_ip)"
+          echo "::set-output name=CLUSTER_IP::$(terraform output -raw private_instance_ip)"
 
-    # The following steps assume secure handling of SSH keys and credentials
-    - name: Create SSH Key File
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.MOVEO_PAIR_PEM }}
-      run: |
-        mkdir -p $HOME/.ssh
-        echo "$SSH_PRIVATE_KEY" > $HOME/.ssh/moveo-pair.pem
-        chmod 400 $HOME/.ssh/moveo-pair.pem
-        
-    # Deploy the pod
-    - name: Deploy to Kubernetes via Bastion
-      run: ssh -i $HOME/.ssh/moveo-pair.pem ubuntu@${{ steps.extract_ips.outputs.BASTION_IP }} "ssh -i moveo-pair.pem ${steps.extract_ips.outputs.CLUSTER_IP} 'microk8s kubectl apply -f moveo_nginx/kubernetes/nginx.yaml'"
+      # The following steps assume secure handling of SSH keys and credentials
+      - name: Create SSH Key File
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.MOVEO_PAIR_PEM }}
+        run: |
+          mkdir -p $HOME/.ssh
+          echo "$SSH_PRIVATE_KEY" > $HOME/.ssh/moveo-pair.pem
+          chmod 400 $HOME/.ssh/moveo-pair.pem
+
+      - name: Deploy to Kubernetes via Bastion
+        run: ssh -i $HOME/.ssh/moveo-pair.pem ubuntu@${{ steps.extract_ips.outputs.BASTION_IP }} "ssh -i moveo-pair.pem ${steps.extract_ips.outputs.CLUSTER_IP} 'microk8s kubectl apply -f moveo_nginx/kubernetes/nginx.yaml'"
