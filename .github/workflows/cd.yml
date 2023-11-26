@@ -29,8 +29,10 @@ jobs:
           cd terraform/
           terraform init
           sleep 2
-          echo "BASTION=$(terraform output -raw bastion_public_ip)" >> "$GITHUB_ENV"
-          echo "CLUSTER_IP=$(terraform output -raw private_instance_ip)" >> "$GITHUB_ENV" 
+          terraform output -raw bastion_public_ip
+          terraform output -raw private_instance_ip
+          echo "BASTION='$(terraform output -raw bastion_public_ip)'" >> "$GITHUB_ENV"
+          echo "CLUSTER='$(terraform output -raw private_instance_ip)'" >> "$GITHUB_ENV"
 
       # The following steps assume secure handling of SSH keys and credentials
       - name: Create SSH Key File
@@ -42,4 +44,4 @@ jobs:
           chmod 400 $HOME/.ssh/moveo-pair.pem
 
       - name: Deploy to Kubernetes via Bastion
-        run: ssh -i $HOME/.ssh/moveo-pair.pem ubuntu@$BASTION "ssh -i moveo-pair.pem $CLUSTER_IP 'microk8s kubectl apply -f moveo_nginx/kubernetes/nginx.yaml'"
+        run: ssh -i $HOME/.ssh/moveo-pair.pem ubuntu@$BASTION "ssh -i moveo-pair.pem $CLUSTER 'microk8s kubectl apply -f moveo_nginx/kubernetes/nginx.yaml'"
