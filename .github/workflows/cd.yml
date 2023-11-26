@@ -1,7 +1,5 @@
 name: Deploy Infrastructure and Application
-defaults:
-  run:
-    working-directory: ${{ env.tf_actions_working_dir }}
+
 on:
   push:
     branches: [ "main" ]
@@ -30,6 +28,7 @@ jobs:
         run: |
           cd moveo_nginx/terraform
           terraform init
+          ls -la
 
     
       # The actual Terraform Apply will be handled via Terraform Cloud UI.
