@@ -84,6 +84,6 @@ variable "user_data_script" {
   microk8s kubectl apply -f kubernetes/nginx.yaml
   microk8s kubectl cluster-info
   microk8s kubectl get all
-  echo -e "$${GREEN}---SCRIPT FINISHED---$${OFF}\n";
+  echo -e "$${GREEN}---SCRIPT FINISHED AT $(date)---$${OFF}\n";
   EOF
 }
