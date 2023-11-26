@@ -32,7 +32,6 @@ jobs:
     
       # The actual Terraform Apply will be handled via Terraform Cloud UI.
       - name: Extract IP Addresses
-        id: extract_ips
         run: |
           ls -la
           echo "BASTION=$(terraform output -raw bastion_public_ip)" >> $GITHUB_ENV 
