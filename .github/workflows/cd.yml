@@ -46,7 +46,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.MOVEO_PAIR_PEM }}
         run: |
           mkdir -p $HOME/.ssh
-          echo "$SSH_PRIVATE_KEY" > $HOME/.ssh/moveo-pair.pem
+          echo $SSH_PRIVATE_KEY > $HOME/.ssh/moveo-pair.pem
           chmod 400 $HOME/.ssh/moveo-pair.pem
           ls -la $HOME/.ssh/
 
