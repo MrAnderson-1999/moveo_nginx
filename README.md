@@ -19,7 +19,7 @@ Deploy a robust and secure AWS infrastructure with Terraform by only using ```te
 - **Automates the Microk8s Single noded Cluster setup**:```user_data``` script initiated when cluster ec2 start. it cloning the repo, download and install microk8s, run deployment  ```nginx.yaml``` 
 - **Bastion**: The Cluster is configured to be sshable only from the Bastion using the same key-pair as for the Bastion
 - **NAT**: The Iac deploys Kubernetes cluster on a private subnet, it (and the kubernetes server API) can access internet using NAT
-- **Kube Deployment**: The cluster deploys an Nginx deployment on port 80, and get exposed from the instance via NodePort 30007
+- **Kube Deployment**: The cluster deploys an Nginx port 80 deployment on itself, and get exposed from the instance via NodePort 30007
 - **A record provisioning**: An A record is created and ponited to the ALB id, which listens on port 80/443 and forward traffic to the Cluster instance as HTTP on port 30007
 
 
