@@ -28,6 +28,7 @@ jobs:
         run: |
           cd terraform/
           terraform init
+          sleep 2
           echo "BASTION=$(terraform output -raw bastion_public_ip)" >> "$GITHUB_ENV"
           echo "CLUSTER_IP=$(terraform output -raw private_instance_ip)" >> "$GITHUB_ENV" 
 
