@@ -74,7 +74,7 @@ variable "domain_name" {
 - The whole Iac may take up to 5 minutes to be fully functional. When it does, you will see **'yo this is nginx'** text when entering the ```domain_name``` URL.
 
 # Uses and Customization
-![image](https://github.com/MrAnderson-1999/moveo_nginx/assets/87763298/ff4bbed9-c0d8-40be-905f-0a2ef464dbfa)
+![image](https://github.com/MrAnderson-1999/moveo_nginx/assets/87763298/24d5dd84-777d-4283-824f-ba2fb83b4e57)
 
 ### Access and Management
 
