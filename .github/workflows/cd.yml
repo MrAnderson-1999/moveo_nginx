@@ -26,15 +26,17 @@ jobs:
 
       - name: Terraform local Init
         run: |
-          ls -la
+          cd terraform/
+          terraform init
 
     
       # The actual Terraform Apply will be handled via Terraform Cloud UI.
       - name: Extract IP Addresses
         id: extract_ips
         run: |
-          echo "::set-output name=BASTION_IP::$(terraform output -raw bastion_public_ip)"
-          echo "::set-output name=CLUSTER_IP::$(terraform output -raw private_instance_ip)"
+          ls -la
+          echo "BASTION=$(terraform output -raw bastion_public_ip)" >> $GITHUB_ENV 
+          echo "CLUSTER_IP=$(terraform output -raw private_instance_ip)" >> $GITHUB_ENV 
 
       # The following steps assume secure handling of SSH keys and credentials
       - name: Create SSH Key File
@@ -46,4 +48,4 @@ jobs:
           chmod 400 $HOME/.ssh/moveo-pair.pem
 
       - name: Deploy to Kubernetes via Bastion
-        run: ssh -i $HOME/.ssh/moveo-pair.pem ubuntu@${{ steps.extract_ips.outputs.BASTION_IP }} "ssh -i moveo-pair.pem ${steps.extract_ips.outputs.CLUSTER_IP} 'microk8s kubectl apply -f moveo_nginx/kubernetes/nginx.yaml'"
+        run: ssh -i $HOME/.ssh/moveo-pair.pem ubuntu@${{ env.BASTION }} "ssh -i moveo-pair.pem ${{ env.CLUSTER_IP }} 'microk8s kubectl apply -f moveo_nginx/kubernetes/nginx.yaml'"
