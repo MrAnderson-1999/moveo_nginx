@@ -45,7 +45,7 @@ jobs:
       run: |
         mkdir -p $HOME/.ssh
         echo "$SSH_PRIVATE_KEY" > $HOME/.ssh/moveo-pair.pem
-        chmod 400 /home/ubuntu/.ssh/moveo-pair.pem
+        chmod 400 $HOME/.ssh/moveo-pair.pem
 
     # Replace 'moveo-pair.pem' handling with your secure approach
     - name: SCP Key to Bastion Host
