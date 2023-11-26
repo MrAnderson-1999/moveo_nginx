@@ -90,9 +90,9 @@ variable "domain_name" {
 ### Additional customization using ```variables.tf```
 - ```instance_type_bastion``` : Define Bastion machine size type | **Default is t2.micro**
 - ```instance_type_private```: Define Cluster machine size type | **Minimum and default is t2.medium**  
-- ```existing_zone_id```,```domain_name``` : Route 53 DNS settings.
+- ```existing_zone_id```,```domain_name``` : Route 53 DNS settings
 - ```key_name``` : Your AWS SSH key pair. will be used for also Bastion and the Cluster
-- ```user_data_script``` : Bootstrapping script for the Nginx server.
+- ```user_data_script``` : Bootstrapping script for the Cluster setup and pod deployment
 -  ```provider_region``` : Main VPC region that will be used for this Iac
 
 
