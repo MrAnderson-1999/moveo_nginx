@@ -32,11 +32,11 @@ jobs:
       run: terraform init
     
     # The actual Terraform Apply will be handled via Terraform Cloud UI.
-    
     - name: Extract IP Addresses
+      id: extract_ips
       run: |
-        echo "BASTION_IP=$(terraform output -raw bastion_public_ip)" >> $GITHUB_ENV
-        echo "CLUSTER_IP=$(terraform output -raw private_instance_ip)" >> $GITHUB_ENV
+        echo "::set-output name=BASTION_IP::$(terraform output -raw bastion_public_ip)"
+        echo "::set-output name=CLUSTER_IP::$(terraform output -raw private_instance_ip)"
 
     # The following steps assume secure handling of SSH keys and credentials
     - name: Create SSH Key File
@@ -48,9 +48,8 @@ jobs:
         chmod 400 /home/ubuntu/.ssh/moveo-pair.pem
 
     # Replace 'moveo-pair.pem' handling with your secure approach
-
     - name: SCP Key to Bastion Host
-      run: scp -i ~/.ssh/moveo-pair.pem ~/.ssh/moveo-pair.pem ubuntu@${{ env.BASTION_IP }}:
+      run: scp -i ~/.ssh/moveo-pair.pem ~/.ssh/moveo-pair.pem ubuntu@${{ steps.extract_ips.outputs.BASTION_IP }}:
 
     - name: Deploy to Kubernetes via Bastion
-      run: ssh -i ~/.ssh/moveo-pair.pem ubuntu@${{ env.BASTION_IP }} "ssh -i moveo-pair.pem ${CLUSTER_IP} 'microk8s kubectl apply -f moveo_nginx/kubernetes/nginx.yaml'"
+      run: ssh -i ~/.ssh/moveo-pair.pem ubuntu@${{ steps.extract_ips.outputs.BASTION_IP }} "ssh -i moveo-pair.pem ${steps.extract_ips.outputs.CLUSTER_IP} 'microk8s kubectl apply -f moveo_nginx/kubernetes/nginx.yaml'"
