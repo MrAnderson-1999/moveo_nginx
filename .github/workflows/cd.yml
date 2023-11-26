@@ -24,16 +24,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Terraform local Init
+      - name: Terraform local Init and Extract IP Addresses
         run: |
           cd terraform/
           terraform init
-
-    
-      # The actual Terraform Apply will be handled via Terraform Cloud UI.
-      - name: Extract IP Addresses
-        run: |
-          ls -la
           echo "BASTION=$(terraform output -raw bastion_public_ip)" >> $GITHUB_ENV 
           echo "CLUSTER_IP=$(terraform output -raw private_instance_ip)" >> $GITHUB_ENV 
 
