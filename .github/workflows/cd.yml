@@ -26,8 +26,6 @@ jobs:
 
       - name: Terraform local Init
         run: |
-          cd moveo_nginx/terraform
-          terraform init
           ls -la
 
     
