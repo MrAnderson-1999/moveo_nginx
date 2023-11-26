@@ -50,7 +50,18 @@ Deploy a robust and secure AWS infrastructure with Terraform by only using ```te
 - Set the AWS credentials of the user owner of the key pair as environmental variables on local pc : **Only of a user with an 'Administrator' privilage**
    - ```export AWS_ACCESS_KEY_ID="<Access ID>"```
    - ```export AWS_SECRET_ACCESS_KEY="<Access SECRET>"```
-  
+ 
+### Remove / Adjust the remote backend at the head of ```main.tf``` 
+```
+  backend "remote" {
+    organization = "moveo-nginx"
+
+    workspaces {
+      name = "moveo_nginx"
+    }
+  }
+```
+
 ### Modify existing_zone_id AND domain_name
 - Make sure you have domain name and a hosted zone already bought and setup on route 53
 - Adjust accordingle the following variables at the ```variables.tf``` file
