@@ -48,6 +48,7 @@ jobs:
           mkdir -p $HOME/.ssh
           echo "$SSH_PRIVATE_KEY" > $HOME/.ssh/moveo-pair.pem
           chmod 400 $HOME/.ssh/moveo-pair.pem
+          ls -la $HOME/.ssh/
 
       - name: Deploy to Kubernetes via Bastion
         run: ssh -v -i $HOME/.ssh/moveo-pair.pem ubuntu@$BASTION "ssh -v -i moveo-pair.pem $CLUSTER 'microk8s kubectl apply -f moveo_nginx/kubernetes/nginx.yaml'"
