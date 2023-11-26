@@ -43,13 +43,13 @@ jobs:
       env:
         SSH_PRIVATE_KEY: ${{ secrets.MOVEO_PAIR_PEM }}
       run: |
-        mkdir -p /home/ubuntu/.ssh
-        echo "$SSH_PRIVATE_KEY" > /home/ubuntu/.ssh/moveo-pair.pem
+        mkdir -p $HOME/.ssh
+        echo "$SSH_PRIVATE_KEY" > $HOME/.ssh/moveo-pair.pem
         chmod 400 /home/ubuntu/.ssh/moveo-pair.pem
 
     # Replace 'moveo-pair.pem' handling with your secure approach
     - name: SCP Key to Bastion Host
-      run: scp -i ~/.ssh/moveo-pair.pem /home/ubuntu/.ssh/moveo-pair.pem ubuntu@${{ steps.extract_ips.outputs.BASTION_IP }}:
+      run: scp -i $HOME/.ssh/moveo-pair.pem $HOME/.ssh/moveo-pair.pem ubuntu@${{ steps.extract_ips.outputs.BASTION_IP }}:
 
     - name: Deploy to Kubernetes via Bastion
-      run: ssh -i ~/.ssh/moveo-pair.pem ubuntu@${{ steps.extract_ips.outputs.BASTION_IP }} "ssh -i moveo-pair.pem ${steps.extract_ips.outputs.CLUSTER_IP} 'microk8s kubectl apply -f moveo_nginx/kubernetes/nginx.yaml'"
+      run: ssh -i $HOME/.ssh/moveo-pair.pem ubuntu@${{ steps.extract_ips.outputs.BASTION_IP }} "ssh -i moveo-pair.pem ${steps.extract_ips.outputs.CLUSTER_IP} 'microk8s kubectl apply -f moveo_nginx/kubernetes/nginx.yaml'"
