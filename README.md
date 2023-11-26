@@ -2,7 +2,8 @@
 
 ## Overview
 Deploy a robust and secure AWS infrastructure with Terraform by only using ```terraform apply```. featuring an Nginx pod deployment in a single-node Microk8s cluster within a private subnet EC2. Accessible through a custom DNS name linked to an Application Load Balancer (ALB) using HTTPS. the setup also includes a Bastion host for secure and restricted private subnet access and cluster managment. 
-![image](https://github.com/MrAnderson-1999/moveo_nginx/assets/87763298/3f781ec6-e52f-43ee-bfe8-d1461126d944)
+![image](https://github.com/MrAnderson-1999/moveo_nginx/assets/87763298/a54aa754-c805-478e-9345-b293d887e619)
+
 
 
 
@@ -98,8 +99,8 @@ variable "domain_name" {
 ### Terraform Outputs
 After running terraform apply, you'll receive these key outputs:
 
-- ```private_instance_ip``` : The private ip of the kubernetes Cluster, which on the private subnet. Used for ssh from Bastion to Cluster.
-- ```bastion_public_ip``` : The Bastion Public ip, from there you could ssh to the Cluster.
+- ```private_instance_ip``` : The private ip of the kubernetes Cluster, which on the private subnet.
+- ```bastion_public_ip``` : The Bastion Public ip, from there you could ssh to the Cluster using ```private_instance_ip```.
 - ```nat_gateway_ip``` : NAT Gateway Public IP, the internet access from the private subnet.
 - ```alb_dns_name``` : ALB Public DNS Name which used as the A record to the cluster.
 
