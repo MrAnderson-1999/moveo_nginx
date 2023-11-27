@@ -1,4 +1,4 @@
-# One Command - Full AWS Infrastructure Deployment using Terraform
+#    ONE COMMAND - Basic Kubernetes Production Infrastructure Via Terraform - Deploy Nginx POD
 
 ## Overview
 Deploy a robust and secure AWS infrastructure with Terraform by only using ```terraform apply```. featuring an Nginx pod deployment in a single-node Microk8s cluster within a private subnet EC2. Accessible through a custom DNS name linked to an Application Load Balancer (ALB) using HTTPS. the setup also includes a Bastion host for secure and restricted private subnet access and cluster managment. 
@@ -62,7 +62,7 @@ Deploy a robust and secure AWS infrastructure with Terraform by only using ```te
   }
 ```
 
-### Modify existing_zone_id AND domain_name
+### Modify ```existing_zone_id``` AND ```domain_name```
 - Make sure you have domain name and a hosted zone already bought and setup on route 53
 - Adjust accordingle the following variables at the ```variables.tf``` file
 ```variable "existing_zone_id" {
