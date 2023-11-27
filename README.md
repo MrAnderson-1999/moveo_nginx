@@ -125,10 +125,10 @@ After running terraform apply, you'll receive these key outputs:
 **Terraform apply went fine, but cant see website after more then 5 minutes**
 - **Verify the healtcheck is fine and traffic routed to pod** : AWS target group health check via AWS UI
 - **Verify the pod is running on the cluster** : SSH the cluster via Bastion and verify its running the ngnix pod via ```microk8s kubectl get all```
-- **Verify its not the user_data script** : ```cat init.log``` to se if the initial installation and setup of the cluster were successful
+- **Verify its not the user_data script** : ```cat init.log``` to verify the initial installation and setup of the cluster were successful by the ```user_data``` script
 
 **Got error of credentials when run ```terraform plan/apply```**
-- Verify youve exported the ```AWS_ACCESS_KEY_ID``` AND ```AWS_SECRET_ACCESS_KEY``` correctly at the Modify section of the getting started. 
+- **Verify AWS credentials in place** : Verify youve exported the ```AWS_ACCESS_KEY_ID``` AND ```AWS_SECRET_ACCESS_KEY``` correctly at the Modify section of the Getting Started. if so you should see the output when running ```echo $AWS_ACCESS_KEY_ID``` locally
 
 
 
