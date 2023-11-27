@@ -52,11 +52,13 @@ jobs:
           
       - name: ip print
         run: |
-          echo $BASTION
-          echo BASTION
-          echo $CLUSTER
-          echo CLUSTER
+          terraform output -raw bastion_public_ip
 
       - name: Deploy to Kubernetes via Bastion
-        run: |
-          ssh -i $HOME/.ssh/moveo-pair.pem -o StrictHostKeyChecking=no ubuntu@$BASTION 'curl ifconfig.me'
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: BASTION
+          username: ubuntu
+          key: ${{ secrets.MOVEO_PAIR_PEM }}
+          port: 22
+          script: whoami
