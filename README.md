@@ -21,7 +21,8 @@ Deploy a robust and secure AWS infrastructure with Terraform by only using ```te
 - **NAT**: The Iac deploys Kubernetes cluster on a private subnet, it (and the kubernetes server API) can access internet using NAT
 - **Kube Deployment**: The cluster deploys an Nginx port 80 deployment on itself, and get exposed from the instance via NodePort 30007
 - **A record provisioning**: An A record is created and ponited to the ALB public dns, which listens on port 80/443 and forward traffic to the Cluster instance as HTTP on port 30007
-![image](https://github.com/MrAnderson-1999/moveo_nginx/assets/87763298/d02b1a40-c9ef-4ed9-a01a-02a88fe4906b)
+![image](https://github.com/MrAnderson-1999/moveo_nginx/assets/87763298/afd023d6-97b4-4ec0-b1ed-b7778f8199f6)
+
 
 
 
