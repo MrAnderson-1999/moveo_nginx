@@ -1,4 +1,4 @@
-# One Command - Full AWS Infrastructure Deployment using Terraform
+#    ONE COMMAND - Basic Kubernetes Production Infrastructure Via Terraform - Deploy Nginx POD
 
 ## Overview
 Deploy a robust and secure AWS infrastructure with Terraform by only using ```terraform apply```. featuring an Nginx pod deployment in a single-node Microk8s cluster within a private subnet EC2. Accessible through a custom DNS name linked to an Application Load Balancer (ALB) using HTTPS. the setup also includes a Bastion host for secure and restricted private subnet access and cluster managment. 
@@ -21,6 +21,14 @@ Deploy a robust and secure AWS infrastructure with Terraform by only using ```te
 - **NAT**: The Iac deploys Kubernetes cluster on a private subnet, it (and the kubernetes server API) can access internet using NAT
 - **Kube Deployment**: The cluster deploys an Nginx port 80 deployment on itself, and get exposed from the instance via NodePort 30007
 - **A record provisioning**: An A record is created and ponited to the ALB public dns, which listens on port 80/443 and forward traffic to the Cluster instance as HTTP on port 30007
+![image](https://github.com/MrAnderson-1999/moveo_nginx/assets/87763298/a88a9895-8154-453b-94f2-2dc66216664c)
+
+
+
+
+
+
+
 
 
 ## Repository Structure
@@ -62,7 +70,7 @@ Deploy a robust and secure AWS infrastructure with Terraform by only using ```te
   }
 ```
 
-### Modify existing_zone_id AND domain_name
+### Modify ```existing_zone_id``` AND ```domain_name```
 - Make sure you have domain name and a hosted zone already bought and setup on route 53
 - Adjust accordingle the following variables at the ```variables.tf``` file
 ```variable "existing_zone_id" {
@@ -125,10 +133,10 @@ After running terraform apply, you'll receive these key outputs:
 **Terraform apply went fine, but cant see website after more then 5 minutes**
 - **Verify the healtcheck is fine and traffic routed to pod** : AWS target group health check via AWS UI
 - **Verify the pod is running on the cluster** : SSH the cluster via Bastion and verify its running the ngnix pod via ```microk8s kubectl get all```
-- **Verify its not the user_data script** : ```cat init.log``` to se if the initial installation and setup of the cluster were successful
+- **Verify its not the user_data script** : ```cat init.log``` to verify the initial installation and setup of the cluster were successful by the ```user_data``` script
 
 **Got error of credentials when run ```terraform plan/apply```**
-- Verify youve exported the ```AWS_ACCESS_KEY_ID``` AND ```AWS_SECRET_ACCESS_KEY``` correctly at the Modify section of the getting started. 
+- **Verify AWS credentials in place** : Verify youve exported the ```AWS_ACCESS_KEY_ID``` AND ```AWS_SECRET_ACCESS_KEY``` correctly at the Modify section of the Getting Started. if so you should see the output when running ```echo $AWS_ACCESS_KEY_ID``` locally
 
 
 

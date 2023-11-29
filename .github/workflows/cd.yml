@@ -16,7 +16,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: echo "Credentials set"
 
-      - name: Terrafom Login 
+      - name: Terraform Login 
         uses: hashicorp/setup-terraform@v2
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
@@ -24,10 +24,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Terraform local Init and Extract IP Addresses
+      - name: Terraform local Init
         run: |
           cd terraform/
           terraform init
+          terraform plan
 
       - name: Extract IP Addresses
         run: |
@@ -40,14 +41,20 @@ jobs:
             echo EOF
           } >> "$GITHUB_ENV"
 
-      # The following steps assume secure handling of SSH keys and credentials
       - name: Create SSH Key File
         env:
           SSH_PRIVATE_KEY: ${{ secrets.MOVEO_PAIR_PEM }}
         run: |
           mkdir -p $HOME/.ssh
           echo "$SSH_PRIVATE_KEY" > $HOME/.ssh/moveo-pair.pem
-          chmod 400 $HOME/.ssh/moveo-pair.pem
+          chmod 600 $HOME/.ssh/moveo-pair.pem
+          echo $BASTION
 
       - name: Deploy to Kubernetes via Bastion
-        run: ssh -i $HOME/.ssh/moveo-pair.pem ubuntu@$BASTION "ssh -i moveo-pair.pem $CLUSTER 'microk8s kubectl apply -f moveo_nginx/kubernetes/nginx.yaml'"
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: $BASTION
+          username: ubuntu
+          key: ${{ secrets.MOVEO_PAIR_PEM }}
+          port: 22
+          script: whoami
