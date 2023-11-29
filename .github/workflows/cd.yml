@@ -28,6 +28,7 @@ jobs:
         run: |
           cd terraform/
           terraform init
+          terraform plan
 
       - name: Extract IP Addresses
         run: |
