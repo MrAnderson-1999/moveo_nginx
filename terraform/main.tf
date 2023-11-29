@@ -8,11 +8,11 @@ terraform {
 
   required_version = ">= 1.2.0"
 
-  backend "remote" {
+  cloud {
     organization = "moveo-nginx"
 
     workspaces {
-      name = "moveo_nginx"
+      name = "moveo-nginx-prod"
     }
   }
 }
