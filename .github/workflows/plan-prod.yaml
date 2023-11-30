@@ -23,14 +23,14 @@ jobs:
       contents: read
       pull-requests: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        
       - name: run ls
         run: ls -la
 
       - name: pwd
         run: pwd
-      
-      - name: Checkout
-        uses: actions/checkout@v3
 
       - name: Upload Configuration
         uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
