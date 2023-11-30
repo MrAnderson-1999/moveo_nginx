@@ -2,6 +2,8 @@ name: "Terraform Plan"
 
 on:
   pull_request:
+  push:
+    branches: [ "main" ]
 
 env:
   TF_CLOUD_ORGANIZATION: "moveo-nginx"
